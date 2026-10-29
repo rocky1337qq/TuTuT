@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ТуТуТ</title>
+    <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css?v=2">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.svg" alt="ТуТуТ" class="logo-img logo-img-light">
+                <img src="images/logo-dark.svg" alt="ТуТуТ" class="logo-img logo-img-dark">
+            </a>
+            <nav id="headerNav">
+                <a href="index.html">Главная</a>
+                <a href="search.html" class="active">Квартиры</a>
+                <div id="authButtons"></div>
+            </nav>
+            <div class="header-right">
+                <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">
+                    <img src="images/moon.png" alt="Тема" class="theme-icon-moon">
+                    <img src="images/sun.png" alt="Тема" class="theme-icon-sun">
+                </button>
+                <button class="burger" id="burgerBtn" onclick="toggleMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="search-page">
+        <div class="container">
+            <div class="breadcrumbs">
+                <a href="index.html">Главная</a>
+                <span>/</span>
+                <span class="current">Квартиры</span>
+            </div>
+
+            <h1 class="section-title">Квартиры в Оренбурге</h1>
+
+            <div class="date-filter">
+                <div>
+                    <label>Заезд:</label>
+                    <input type="date" id="checkinInput" min="2026-01-01" max="2026-12-31">
+                </div>
+                <div>
+                    <label>Выезд:</label>
+                    <input type="date" id="checkoutInput" min="2026-01-01" max="2026-12-31">
+                </div>
+            </div>
+
+            <div class="listings-grid" id="listingsGrid"></div>
+            <div class="no-results" id="noResults" style="display:none">
+                Нет доступных квартир на выбранные даты
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>2016-2026 ТуТуТ — Сервис аренды квартир на сутки</p>
+            <a href="#">Пользовательское соглашение</a>
+        </div>
+    </footer>
+
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('loginModal')">x</button>
+            <h2>Вход в аккаунт</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email или телефон</label>
+                    <input type="text" id="loginEmail" placeholder="example@mail.ru" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="loginPassword" placeholder="Введите пароль" required maxlength="50">
+                </div>
+                <button type="submit" class="btn">Войти</button>
+            </form>
+            <div class="modal-footer">
+                Нет аккаунта? 
+                <a href="#" onclick="event.preventDefault(); closeModal('loginModal'); openModal('registerModal')">
+                    Зарегистрироваться
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('registerModal')">x</button>
+            <h2>Регистрация</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>Ваше имя</label>
+                    <input type="text" id="regName" placeholder="Иван" required maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="example@mail.ru" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="regPassword" placeholder="Минимум 6 символов" required minlength="6" maxlength="50">
+                </div>
+                <button type="submit" class="btn">Зарегистрироваться</button>
+            </form>
+            <div class="modal-footer">
+                Уже есть аккаунт? 
+                <a href="#" onclick="event.preventDefault(); closeModal('registerModal'); openModal('loginModal')">
+                    Войти
+                </a>
+            </div>
+</div>
+    </div>
+
+    <script src="js/theme.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dates.js"></script>
+    <script src="data.js"></script>
+    <script src="js/listings.js"></script>
+    <script>
+        var checkinParam = getUrlParameter('checkin');
+        var checkoutParam = getUrlParameter('checkout');
+        var checkinInput = document.getElementById('checkinInput');
+        var checkoutInput = document.getElementById('checkoutInput');
+        
+        if (checkinParam) checkinInput.value = checkinParam;
+        if (checkoutParam) checkoutInput.value = checkoutParam;
+        
+        initTheme();
+        checkAuth();
+        showApartments();
+        
+        checkinInput.onchange = showApartments;
+        checkoutInput.onchange = showApartments;
+    </script>
+</body>
+</html>
