@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ТуТуТ — Аренда квартиры</title>
+    <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="images/logo.svg" alt="ТуТуТ" class="logo-img logo-img-light">
+                <img src="images/logo-dark.svg" alt="ТуТуТ" class="logo-img logo-img-dark">
+            </a>
+            <nav id="headerNav">
+                <a href="index.html">Главная</a>
+                <a href="search.html">Квартиры</a>
+                <div id="authButtons"></div>
+            </nav>
+            <div class="header-right">
+                <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">
+                    <img src="images/moon.png" alt="Тема" class="theme-icon-moon">
+                    <img src="images/sun.png" alt="Тема" class="theme-icon-sun">
+                </button>
+                <button class="burger" id="burgerBtn" onclick="toggleMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="card-page">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+                <div class="breadcrumbs" id="breadcrumbs" style="margin-bottom: 0;">
+                    <a href="index.html">Главная</a>
+                    <span>/</span>
+                    <a href="search.html">Квартиры</a>
+                    <span>/</span>
+                    <span class="current" id="breadcrumbName">Загрузка...</span>
+                </div>
+                <a href="search.html" class="btn btn-outline" style="padding: 6px 14px; font-size: 14px;">← Назад к поиску</a>
+            </div>
+
+            <div class="card-main">
+                <div id="cardContent">
+                    <p style="padding: 40px; text-align: center; color: var(--text-secondary);">Загрузка данных квартиры...</p>
+                </div>
+                <div class="card-booking">
+                    <div class="price" id="sidebarPrice">— руб <span>/ сутки</span></div>
+                    <button class="btn" id="bookBtn" style="width: 100%;">Забронировать</button>
+                </div>
+                <div class="card-map">
+                    <h3>Расположение на карте</h3>
+                    <img id="mapImage" src="" alt="Карта" style="width: 100%; border-radius: 8px; min-height: 200px; background: var(--bg-secondary);">
+                </div>
+            </div>
+
+            <!-- Секция отзывов об этой квартире -->
+            <section class="card-reviews-section" style="margin-top: 50px; padding-top: 30px; border-top: 1px solid var(--border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+                    <h2>Отзывы гостей (<span id="reviewsCount">0</span>)</h2>
+                    <div id="aptRatingBadge" style="display: none; align-items: center; gap: 6px; font-weight: 700; font-size: 18px; color: #856404; background: #fff3cd; padding: 4px 12px; border-radius: 8px;">
+                        ★ <span id="aptRatingNum">0.0</span>
+                    </div>
+                </div>
+
+                <div id="reviewsList">
+                    <p style="color: var(--text-secondary);">Загрузка отзывов...</p>
+                </div>
+
+                <!-- Форма добавления отзыва -->
+                <div style="margin-top: 30px; background: var(--bg-card); padding: 24px; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow);">
+                    <h3 style="margin-bottom: 16px;">Оставить свой отзыв</h3>
+                    <div id="reviewAuthNotice" style="display: none; color: var(--text-secondary);"></div>
+                    <form id="addReviewForm" style="display: none;">
+                        <div class="form-group">
+                            <label>Ваша оценка</label>
+                            <select id="reviewRating" style="max-width: 200px;" required>
+                                <option value="5">★★★★★ (5 — Отлично)</option>
+                                <option value="4">★★★★☆ (4 — Хорошо)</option>
+                                <option value="3">★★★☆☆ (3 — Удовлетворительно)</option>
+                                <option value="2">★★☆☆☆ (2 — Плохо)</option>
+                                <option value="1">★☆☆☆☆ (1 — Ужасно)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Ваш отзыв</label>
+                            <textarea id="reviewComment" rows="3" placeholder="Поделитесь своими впечатлениями о проживании..." required maxlength="500"></textarea>
+                        </div>
+                        <button type="submit" class="btn">Оставить отзыв</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>2016-2026 ТуТуТ — Сервис аренды квартир на сутки</p>
+            <a href="#">Пользовательское соглашение</a>
+        </div>
+    </footer>
+
+    <!-- Модальное окно просмотра полноразмерных фото -->
+    <div class="photo-modal" id="photoModal">
+        <button class="photo-modal-close" id="photoModalClose">×</button>
+        <button class="photo-modal-nav photo-modal-prev" id="photoModalPrev">&lt;</button>
+        <img class="photo-modal-img" id="photoModalImg" src="" alt="">
+        <button class="photo-modal-nav photo-modal-next" id="photoModalNext">&gt;</button>
+        <div class="photo-modal-counter" id="photoModalCounter"></div>
+    </div>
+
+    <!-- Модальное окно входа -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('loginModal')">×</button>
+            <h2>Вход в аккаунт</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="example@mail.ru" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="loginPassword" placeholder="Введите пароль" required maxlength="50">
+                </div>
+                <button type="submit" class="btn">Войти</button>
+            </form>
+            <div class="modal-footer">
+                Нет аккаунта? 
+                <a href="#" onclick="event.preventDefault(); closeModal('loginModal'); openModal('registerModal')">
+                    Зарегистрироваться
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно регистрации -->
+    <div class="modal" id="registerModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('registerModal')">×</button>
+            <h2>Регистрация</h2>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>Ваше имя</label>
+                    <input type="text" id="regName" placeholder="Иван" required maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="example@mail.ru" required maxlength="100">
+                </div>
+                <div class="form-group">
+                    <label>Пароль</label>
+                    <input type="password" id="regPassword" placeholder="Минимум 6 символов" required minlength="6" maxlength="50">
+                </div>
+                <button type="submit" class="btn">Зарегистрироваться</button>
+            </form>
+            <div class="modal-footer">
+                Уже есть аккаунт? 
+                <a href="#" onclick="event.preventDefault(); closeModal('registerModal'); openModal('loginModal')">
+                    Войти
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно бронирования -->
+    <div class="modal" id="bookingModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('bookingModal')">×</button>
+            <h2>Заявка на бронирование</h2>
+            <div class="booking-info" id="bookingInfo"></div>
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label>Ваше имя</label>
+                    <input type="text" id="bookName" placeholder="Иван Петров" required maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label>Телефон</label>
+                    <input type="tel" id="bookPhone" placeholder="+7 (999) 123-45-67" required maxlength="20">
+                </div>
+                <div class="form-group">
+                    <label>Комментарий / Пожелания</label>
+                    <textarea id="bookMessage" placeholder="Время прибытия, количество гостей..." maxlength="500"></textarea>
+                </div>
+                <button type="submit" class="btn" id="submitBtn">Отправить заявку</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/menu.js"></script>
+    <script src="js/dates.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/gallery.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/booking.js"></script>
+    <script src="js/reviews.js"></script>
+    <script>
+        initTheme();
+        checkAuth();
+
+        var checkin = getUrlParameter('checkin');
+        var checkout = getUrlParameter('checkout');
+        var aptId = parseInt(getUrlParameter('id'), 10);
+        var apt = null;
+
+        async function initCard() {
+            if (!aptId) {
+                document.querySelector('.card-page').innerHTML = '<div class="container"><h1>Квартира не указана</h1><a href="search.html" class="btn">Вернуться в каталог</a></div>';
+                return;
+            }
+
+            try {
+                apt = await API.get('/apartments/' + aptId);
+                window.apt = apt;
+                window.currentApartment = apt;
+
+                document.getElementById('sidebarPrice').innerHTML = formatPrice(apt.price) + ' руб <span>/ сутки</span>';
+                document.getElementById('breadcrumbName').textContent = apt.name;
+
+                if (Number(apt.avg_rating) > 0) {
+                    var badge = document.getElementById('aptRatingBadge');
+                    var num = document.getElementById('aptRatingNum');
+                    if (badge && num) {
+                        num.textContent = apt.avg_rating;
+                        badge.style.display = 'inline-flex';
+                    }
+                }
+
+                var amenitiesHtml = '';
+                if (apt.amenities && apt.amenities.length > 0) {
+                    for (var i = 0; i < apt.amenities.length; i++) {
+                        amenitiesHtml += '<span class="amenity">' + escapeHtml(apt.amenities[i]) + '</span>';
+                    }
+                }
+
+                var charsHtml = '<div class="chars">' +
+                    '<span class="char">' + apt.rooms + ' ' + getRoomsText(apt.rooms) + '</span>' +
+                    '<span class="char">' + apt.area + ' м²</span>' +
+                    '<span class="char">' + apt.floor + ' этаж</span>' +
+                    '</div>';
+
+                var photos = apt.photos && apt.photos.length > 0 ? apt.photos : ['images/tusovka.jpg'];
+                var thumbsHtml = '';
+                for (var i = 0; i < photos.length; i++) {
+                    thumbsHtml += '<img class="thumb ' + (i === 0 ? 'active' : '') + '" ' +
+                        'src="' + escapeHtml(photos[i]) + '" onclick="setMainPhoto(' + i + ')">';
+                }
+
+                document.getElementById('cardContent').innerHTML =
+                    '<div class="card-gallery" id="gallery">' +
+                        '<img id="mainPhoto" src="' + escapeHtml(photos[0]) + '" onclick="openPhotoModal(0)">' +
+                        '<div class="slider-btns">' +
+                            '<button class="slider-btn" id="prevBtn">&lt;</button>' +
+                            '<button class="slider-btn" id="nextBtn">&gt;</button>' +
+                        '</div>' +
+                        '<div class="thumbs">' + thumbsHtml + '</div>' +
+                    '</div>' +
+                    '<div class="card-details">' +
+                        '<h1 id="aptTitle">' + escapeHtml(apt.name) + '</h1>' +
+                        '<p class="address" id="aptAddress">' + escapeHtml(apt.city) + ', ' + escapeHtml(apt.address) + '</p>' +
+                        '<div class="price" id="aptPrice">' + formatPrice(apt.price) + ' руб <span>/ сутки</span></div>' +
+                        charsHtml +
+                        (amenitiesHtml ? '<h2>Удобства</h2><div class="amenities">' + amenitiesHtml + '</div>' : '') +
+                        '<h2>Описание</h2>' +
+                        '<p class="description" id="aptDesc">' + escapeHtml(apt.description) + '</p>' +
+                    '</div>';
+
+                document.getElementById('prevBtn').onclick = prevPhoto;
+                document.getElementById('nextBtn').onclick = nextPhoto;
+
+                initMap();
+                loadReviews(aptId);
+                initReviewForm(aptId);
+            } catch (err) {
+                document.querySelector('.card-page').innerHTML = '<div class="container"><h1>Ошибка загрузки квартиры: ' + escapeHtml(err.message) + '</h1><a href="search.html" class="btn">Вернуться в каталог</a></div>';
+            }
+        }
+
+        initCard();
+    </script>
+</body>
+</html>

@@ -424,12 +424,14 @@ body:not([data-theme]) .theme-icon-sun {
 }
 
 .features-container {
-    width: 1137px;
+    max-width: 1137px;
+    width: 100%;
     margin: 0 auto;
     background: #FFFFFF;
     border-radius: 20px;
     padding: 46px 68px 50px;
     position: relative;
+    box-sizing: border-box;
 }
 
 .features-title {
@@ -1033,7 +1035,7 @@ body:not([data-theme]) .theme-icon-sun {
     display: flex;
     gap: 4px;
     padding: 8px;
-    background: #f5f5f5;
+    background: var(--bg-secondary);
 }
 
 .listing-gallery .thumb {
@@ -1817,6 +1819,26 @@ body:not([data-theme]) .theme-icon-sun {
 .status.confirmed {
     background: rgba(40, 167, 69, 0.2);
     color: #155724;
+}
+
+.status.cancelled {
+    background: rgba(220, 53, 69, 0.2);
+    color: #721c24;
+}
+
+.dropdown-header {
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+}
+.dropdown-header strong {
+    font-size: 14px;
+    color: var(--text);
+}
+.dropdown-header small {
+    font-size: 11px;
+    color: var(--text-secondary);
 }
 
 .booking-item .price {
