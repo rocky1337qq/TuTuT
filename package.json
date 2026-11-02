@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server/server.js",
     "dev": "node --watch server/server.js",
-    "init-db": "node server/scripts/init-db.js"
+    "init-db": "node server/scripts/init-db.js",
+    "test": "node server/scripts/test-api.js"
   },
   "keywords": [
     "rent",
