@@ -39,9 +39,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`=========================================`);
-  console.log(`🚀 Сервер «ТуТуТ» запущен на порту ${PORT}`);
-  console.log(`🌐 Сайт доступен: http://localhost:${PORT}`);
-  console.log(`👑 Админ-панель:  http://localhost:${PORT}/admin.html`);
-  console.log(`=========================================`);
+  console.log(`Сервер «ТуТуТ» запущен на порту ${PORT}`);
+  console.log(`Сайт доступен: http://localhost:${PORT}`);
+  console.log(`Панель администратора: http://localhost:${PORT}/admin.html`);
 });

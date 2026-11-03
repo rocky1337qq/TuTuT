@@ -1860,3 +1860,305 @@ body:not([data-theme]) .theme-icon-sun {
     color: var(--text-muted);
     margin-bottom: 20px;
 }
+
+/* ========================================================
+   КОМПОНЕНТЫ КАТАЛОГА И ИНТЕРАКТИВНОГО КАЛЕНДАРЯ
+   ======================================================== */
+
+/* Беджи доступности и статусы на карточках */
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    letter-spacing: -0.2px;
+    margin-bottom: 8px;
+    width: fit-content;
+}
+
+.badge-status.available {
+    background: #e6f7ef;
+    color: #0A7C3E;
+}
+
+[data-theme="dark"] .badge-status.available {
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+}
+
+.badge-status.busy {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+[data-theme="dark"] .badge-status.busy {
+    background: rgba(148, 163, 184, 0.15);
+    color: #94a3b8;
+}
+
+.badge-status .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.badge-status.available .status-dot {
+    background: #00A859;
+    box-shadow: 0 0 0 2px rgba(0, 168, 89, 0.2);
+}
+
+.badge-status.busy .status-dot {
+    background: #94a3b8;
+}
+
+.badge-verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(10, 124, 62, 0.08);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+/* Карточки каталога предложений */
+.listing-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    cursor: pointer;
+}
+
+.listing-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    border-color: rgba(10, 124, 62, 0.3);
+}
+
+/* Плавающий современный календарь (Datepicker) */
+.dc-datepicker-popup {
+    position: absolute;
+    z-index: 1000;
+    width: 320px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.14);
+    padding: 16px;
+    font-family: inherit;
+    animation: dcFadeIn 0.15s ease-out;
+}
+
+@keyframes dcFadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dc-dp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+}
+
+.dc-dp-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+}
+
+.dc-dp-nav-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.dc-dp-nav-btn:hover:not(:disabled) {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+
+.dc-dp-nav-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.dc-dp-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.dc-dp-weekday {
+    padding: 4px 0;
+}
+
+.dc-dp-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+.dc-dp-cell {
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+}
+
+.dc-dp-cell:hover:not([disabled]):not(.selected-checkin):not(.selected-checkout) {
+    background: var(--bg-secondary);
+}
+
+.dc-dp-cell.empty {
+    cursor: default;
+}
+
+.dc-dp-cell.past {
+    color: var(--text-muted);
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.dc-dp-cell.booked {
+    color: #dc3545;
+    text-decoration: line-through;
+    opacity: 0.45;
+    cursor: not-allowed;
+    background: rgba(220, 53, 69, 0.06);
+}
+
+.dc-dp-booked-dot {
+    position: absolute;
+    bottom: 3px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #dc3545;
+}
+
+.dc-dp-cell.selected-checkin,
+.dc-dp-cell.selected-checkout {
+    background: #00A859 !important;
+    color: #FFFFFF !important;
+    font-weight: 700;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 168, 89, 0.3);
+}
+
+.dc-dp-cell.in-range {
+    background: rgba(0, 168, 89, 0.12);
+    border-radius: 0;
+    color: #0A7C3E;
+    font-weight: 600;
+}
+
+[data-theme="dark"] .dc-dp-cell.in-range {
+    color: #34d399;
+}
+
+.dc-dp-footer {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.dc-dp-legend {
+    display: flex;
+    gap: 12px;
+}
+
+.dc-dp-legend .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.dc-dp-legend .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.dc-dp-legend .dot.free { background: #00A859; }
+.dc-dp-legend .dot.booked { background: #dc3545; }
+
+.dc-dp-status {
+    font-weight: 600;
+    color: var(--accent);
+}
+
+/* Поля ввода дат бронирования */
+.date-input-wrapper {
+    position: relative;
+    cursor: pointer;
+}
+
+.date-input-wrapper input {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text);
+    background: var(--bg-card);
+}
+
+.date-input-wrapper .calendar-icon {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--text-muted);
+}
+
+/* Векторные SVG-иконки интерфейса */
+.icon-svg {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    stroke-width: 2;
+    stroke: currentColor;
+    fill: none;
+    vertical-align: middle;
+}
+
+.icon-svg-lg {
+    width: 20px;
+    height: 20px;
+}

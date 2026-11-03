@@ -1,11 +1,11 @@
-// Модуль оформления бронирования через API
+// Модуль бронирования (интеграция с проверкой доступности дат)
 
 function openBooking() {
   var user = API.getUser();
   var token = API.getToken();
 
   if (!user || !token) {
-    alert('Пожалуйста, войдите в аккаунт или зарегистрируйтесь для бронирования квартиры');
+    alert('Пожалуйста, выполните вход в учетную запись для бронирования объекта');
     openModal('loginModal');
     return;
   }
@@ -19,28 +19,44 @@ function openBooking() {
   if (nameInput && user.name) nameInput.value = user.name;
   if (phoneInput && user.phone) phoneInput.value = user.phone;
 
-  // Расчёт стоимости и периода
-  var checkinVal = getUrlParameter('checkin') || '';
-  var checkoutVal = getUrlParameter('checkout') || '';
-  var infoDiv = document.getElementById('bookingInfo');
+  // Считываем выбранные даты из инпутов карточки или URL
+  var checkinVal = (document.getElementById('checkinInput') && document.getElementById('checkinInput').value) || getUrlParameter('checkin') || '';
+  var checkoutVal = (document.getElementById('checkoutInput') && document.getElementById('checkoutInput').value) || getUrlParameter('checkout') || '';
 
+  if (!checkinVal || !checkoutVal) {
+    alert('Пожалуйста, выберите даты заезда и выезда в блоке бронирования');
+    return;
+  }
+
+  // Проверка на пересечение с занятыми датами
+  if (window.currentApartment && window.currentApartment.bookedDates) {
+    for (var i = 0; i < window.currentApartment.bookedDates.length; i++) {
+      var b = window.currentApartment.bookedDates[i];
+      if (checkinVal < b.checkout && checkoutVal > b.checkin) {
+        alert('Выбранные даты (' + formatDate(checkinVal, true) + ' — ' + formatDate(checkoutVal, true) + ') уже заняты другим гостем. Пожалуйста, выберите свободный период.');
+        return;
+      }
+    }
+  }
+
+  var infoDiv = document.getElementById('bookingInfo');
   if (infoDiv && window.currentApartment) {
     var nights = calculateNights(checkinVal, checkoutVal);
-    var nightsText = nights > 0 ? nights + ' суток' : 'уточняется';
-    var totalCost = nights > 0 ? formatPrice(nights * window.currentApartment.price) + ' руб' : 'рассчитывается';
+    var nightsText = nights + ' ' + (nights === 1 ? 'сутки' : 'суток');
+    var totalCost = formatPrice(nights * window.currentApartment.price) + ' ₽';
 
     infoDiv.innerHTML =
-      '<div style="background: var(--bg-secondary, #f8f9fa); padding: 14px; border-radius: 8px; margin-bottom: 16px; border: 1px solid var(--border); font-size: 14px;">' +
-        '<div style="font-weight: 600; margin-bottom: 6px;">' + escapeHtml(window.currentApartment.name) + '</div>' +
-        '<div style="color: var(--text-secondary);">' + escapeHtml(window.currentApartment.address) + '</div>' +
-        '<hr style="margin: 8px 0; border: none; border-top: 1px solid var(--border);">' +
-        '<div style="display: flex; justify-content: space-between; margin-bottom: 4px;">' +
-          '<span>Заезд: <b>' + (checkinVal ? formatDate(checkinVal, true) : 'не выбрано') + '</b></span>' +
-          '<span>Выезд: <b>' + (checkoutVal ? formatDate(checkoutVal, true) : 'не выбрано') + '</b></span>' +
+      '<div style="background: var(--bg-secondary); padding: 16px; border-radius: 12px; margin-bottom: 18px; border: 1px solid var(--border); font-size: 14px;">' +
+        '<div style="font-weight: 700; font-size: 15px; margin-bottom: 4px; color: var(--text);">' + escapeHtml(window.currentApartment.name) + '</div>' +
+        '<div style="color: var(--text-secondary); font-size: 13px;">' + escapeHtml(window.currentApartment.address) + '</div>' +
+        '<hr style="margin: 12px 0; border: none; border-top: 1px solid var(--border);">' +
+        '<div style="display: flex; justify-content: space-between; margin-bottom: 6px;">' +
+          '<span>Заезд: <b>' + formatDate(checkinVal, true) + '</b></span>' +
+          '<span>Выезд: <b>' + formatDate(checkoutVal, true) + '</b></span>' +
         '</div>' +
-        '<div style="display: flex; justify-content: space-between; font-weight: 600; margin-top: 6px; color: var(--accent);">' +
-          '<span>Длительность: ' + nightsText + '</span>' +
-          '<span>Итого: ' + totalCost + '</span>' +
+        '<div style="display: flex; justify-content: space-between; font-weight: 700; margin-top: 8px; color: var(--accent); font-size: 15px;">' +
+          '<span>Период: ' + nightsText + '</span>' +
+          '<span>К оплате: ' + totalCost + '</span>' +
         '</div>' +
       '</div>';
   }
@@ -64,22 +80,16 @@ if (bookingForm) {
     e.preventDefault();
 
     if (!window.currentApartment) {
-      alert('Данные квартиры не загружены');
+      alert('Данные объекта не загружены');
       return;
     }
 
-    var checkinVal = getUrlParameter('checkin');
-    var checkoutVal = getUrlParameter('checkout');
+    var checkinVal = (document.getElementById('checkinInput') && document.getElementById('checkinInput').value) || getUrlParameter('checkin') || '';
+    var checkoutVal = (document.getElementById('checkoutInput') && document.getElementById('checkoutInput').value) || getUrlParameter('checkout') || '';
 
     if (!checkinVal || !checkoutVal) {
-      var customCheckin = prompt('Укажите дату заезда (ГГГГ-ММ-ДД):', '2026-11-10');
-      var customCheckout = prompt('Укажите дату выезда (ГГГГ-ММ-ДД):', '2026-11-13');
-      if (!customCheckin || !customCheckout) {
-        alert('Даты бронирования обязательны!');
-        return;
-      }
-      checkinVal = customCheckin;
-      checkoutVal = customCheckout;
+      alert('Пожалуйста, выберите даты бронирования');
+      return;
     }
 
     var name = document.getElementById('bookName').value.trim();
@@ -100,18 +110,19 @@ if (bookingForm) {
         comment: comment
       });
 
-      alert('🎉 ' + response.message + '\nИтого к оплате: ' + formatPrice(response.booking.total_price) + ' руб.');
+      alert(response.message + '\nСумма бронирования: ' + formatPrice(response.booking.total_price) + ' ₽');
       closeBooking();
       bookingForm.reset();
 
       if (confirm('Перейти в личный кабинет для просмотра бронирования?')) {
         window.location.href = 'profile.html?tab=bookings';
+      } else {
+        window.location.reload();
       }
     } catch (err) {
       alert('Ошибка при бронировании: ' + err.message);
     } finally {
-      // Кнопка разблокируется ТОЛЬКО после завершения запроса
-      submitBtn.textContent = 'Отправить заявку';
+      submitBtn.textContent = 'Подтвердить бронирование';
       submitBtn.disabled = false;
     }
   };

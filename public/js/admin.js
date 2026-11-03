@@ -1,4 +1,4 @@
-// Скрипт панели администратора
+// Панель управления администратора
 
 document.addEventListener('DOMContentLoaded', function() {
   initTheme();
@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Защита доступа: только администраторы
   if (!user || !token || user.role !== 'admin') {
-    alert('Доступ запрещён! Раздел предназначен только для администраторов сайта.');
+    alert('Доступ запрещен. Раздел предназначен исключительно для администраторов сервиса.');
     window.location.href = 'index.html';
     return;
   }
@@ -23,7 +23,7 @@ function switchAdminTab(tab) {
   document.querySelectorAll('.admin-tab-content').forEach(function(c) { c.classList.remove('active'); });
 
   var activeBtn = Array.from(document.querySelectorAll('.admin-nav-tab')).find(function(b) {
-    return b.textContent.toLowerCase().includes(tab);
+    return b.getAttribute('onclick') && b.getAttribute('onclick').includes(tab);
   });
   if (activeBtn) activeBtn.classList.add('active');
 
@@ -43,13 +43,13 @@ async function loadStats() {
     document.getElementById('statApartments').textContent = stats.totalApartments || 0;
     document.getElementById('statUsers').textContent = stats.totalUsers || 0;
     document.getElementById('statBookings').textContent = stats.totalBookings || 0;
-    document.getElementById('statRevenue').textContent = formatPrice(stats.totalRevenue || 0) + ' руб';
+    document.getElementById('statRevenue').textContent = formatPrice(stats.totalRevenue || 0) + ' ₽';
   } catch (err) {
     console.error('Stats load error:', err);
   }
 }
 
-// 1. Управление квартирами
+// 1. Управление объектами недвижимости
 var cachedApartments = [];
 
 async function loadAdminApartments() {
@@ -59,7 +59,7 @@ async function loadAdminApartments() {
   try {
     cachedApartments = await API.get('/admin/apartments');
     if (cachedApartments.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Квартир пока нет</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 30px;">Объекты не найдены</td></tr>';
       return;
     }
 
@@ -68,21 +68,21 @@ async function loadAdminApartments() {
       var photo = apt.photos && apt.photos.length > 0 ? apt.photos[0] : 'images/tusovka.jpg';
       html +=
         '<tr>' +
-          '<td>' + apt.id + '</td>' +
-          '<td><img src="' + escapeHtml(photo) + '" alt="" style="width: 50px; height: 35px; object-fit: cover; border-radius: 4px;"></td>' +
-          '<td><strong>' + escapeHtml(apt.name) + '</strong></td>' +
-          '<td>' + escapeHtml(apt.address) + '</td>' +
-          '<td>' + apt.rooms + ' комн.</td>' +
-          '<td><strong>' + formatPrice(apt.price) + ' руб</strong></td>' +
+          '<td><span style="font-weight: 600; color: var(--text-secondary);">#' + apt.id + '</span></td>' +
+          '<td><img src="' + escapeHtml(photo) + '" alt="" style="width: 52px; height: 38px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border);"></td>' +
+          '<td><strong style="color: var(--text);">' + escapeHtml(apt.name) + '</strong></td>' +
+          '<td style="color: var(--text-secondary);">' + escapeHtml(apt.address) + '</td>' +
+          '<td>' + apt.rooms + ' ' + getRoomsText(apt.rooms) + '</td>' +
+          '<td><strong style="color: var(--accent);">' + formatPrice(apt.price) + ' ₽</strong></td>' +
           '<td>' +
-            '<button class="btn btn-sm" onclick="editApartment(' + apt.id + ')">Редакт.</button>' +
-            '<button class="btn btn-sm btn-outline" style="color: #dc3545; border-color: #dc3545;" onclick="deleteApartment(' + apt.id + ')">Удалить</button>' +
+            '<button class="btn-action btn-action-outline" onclick="editApartment(' + apt.id + ')">Изменить</button> ' +
+            '<button class="btn-action btn-action-danger" onclick="deleteApartment(' + apt.id + ')">Удалить</button>' +
           '</td>' +
         '</tr>';
     });
     tbody.innerHTML = html;
   } catch (err) {
-    tbody.innerHTML = '<tr><td colspan="7" style="color: #dc3545; text-align: center;">Ошибка загрузки: ' + escapeHtml(err.message) + '</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="color: #dc2626; text-align: center;">Ошибка загрузки: ' + escapeHtml(err.message) + '</td></tr>';
   }
 }
 
@@ -91,7 +91,7 @@ function openApartmentModal(apt) {
   form.reset();
 
   if (apt) {
-    document.getElementById('aptModalTitle').textContent = 'Редактировать квартиру #' + apt.id;
+    document.getElementById('aptModalTitle').textContent = 'Редактировать объект #' + apt.id;
     document.getElementById('formAptId').value = apt.id;
     document.getElementById('aptFormName').value = apt.name || '';
     document.getElementById('aptFormAddress').value = apt.address || '';
@@ -104,7 +104,7 @@ function openApartmentModal(apt) {
     document.getElementById('aptFormPhotos').value = (apt.photos || []).join(', ');
     document.getElementById('aptFormAmenities').value = (apt.amenities || []).join(', ');
   } else {
-    document.getElementById('aptModalTitle').textContent = 'Добавить новую квартиру';
+    document.getElementById('aptModalTitle').textContent = 'Добавить новый объект';
     document.getElementById('formAptId').value = '';
     document.getElementById('aptFormCoords').value = '51.831664,55.171192';
   }
@@ -118,19 +118,18 @@ function editApartment(id) {
 }
 
 async function deleteApartment(id) {
-  if (!confirm('Вы уверены, что хотите удалить квартиру #' + id + '? Все связанные бронирования и отзывы также будут удалены!')) return;
+  if (!confirm('Подтвердите удаление объекта #' + id + '. Все связанные заявки и отзывы будут удалены.')) return;
 
   try {
     await API.delete('/admin/apartments/' + id);
-    alert('Квартира успешно удалена');
     loadStats();
     loadAdminApartments();
   } catch (err) {
-    alert(err.message || 'Ошибка удаления');
+    alert(err.message || 'Ошибка при удалении');
   }
 }
 
-// Форма добавления/редактирования квартиры
+// Сохранение объекта
 document.getElementById('apartmentForm').onsubmit = async function(e) {
   e.preventDefault();
   var id = document.getElementById('formAptId').value;
@@ -165,16 +164,14 @@ document.getElementById('apartmentForm').onsubmit = async function(e) {
   try {
     if (id) {
       await API.put('/admin/apartments/' + id, payload);
-      alert('Квартира успешно обновлена!');
     } else {
       await API.post('/admin/apartments', payload);
-      alert('Квартира успешно добавлена!');
     }
     closeModal('aptModal');
     loadStats();
     loadAdminApartments();
   } catch (err) {
-    alert(err.message || 'Ошибка сохранения квартиры');
+    alert(err.message || 'Ошибка сохранения данных');
   }
 };
 
@@ -186,44 +183,44 @@ async function loadAdminBookings() {
   try {
     var bookings = await API.get('/admin/bookings');
     if (bookings.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Бронирований пока нет</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 30px;">Заявки на бронирование отсутствуют</td></tr>';
       return;
     }
 
     var html = '';
     bookings.forEach(function(b) {
       var statusClass = 'badge-pending';
-      var statusText = 'Ожидание';
+      var statusText = 'Ожидает решения';
       if (b.status === 'confirmed') { statusClass = 'badge-confirmed'; statusText = 'Подтверждено'; }
       if (b.status === 'cancelled') { statusClass = 'badge-cancelled'; statusText = 'Отменено'; }
 
-      var dates = (b.checkin ? formatDate(b.checkin) : '') + ' — ' + (b.checkout ? formatDate(b.checkout) : '');
+      var dates = (b.checkin ? formatDate(b.checkin, true) : '') + ' — ' + (b.checkout ? formatDate(b.checkout, true) : '');
 
       var actions = '';
       if (b.status === 'pending') {
-        actions += '<button class="btn btn-sm" style="background: #28a745;" onclick="changeBookingStatus(' + b.id + ', \'confirmed\')">✓ Подтвердить</button>';
-        actions += '<button class="btn btn-sm btn-outline" style="color: #dc3545; border-color: #dc3545;" onclick="changeBookingStatus(' + b.id + ', \'cancelled\')">✕ Отклонить</button>';
+        actions += '<button class="btn-action btn-action-primary" onclick="changeBookingStatus(' + b.id + ', \'confirmed\')">Подтвердить</button> ';
+        actions += '<button class="btn-action btn-action-danger" onclick="changeBookingStatus(' + b.id + ', \'cancelled\')">Отклонить</button>';
       } else if (b.status === 'confirmed') {
-        actions += '<button class="btn btn-sm btn-outline" style="color: #dc3545; border-color: #dc3545;" onclick="changeBookingStatus(' + b.id + ', \'cancelled\')">Отменить</button>';
+        actions += '<button class="btn-action btn-action-danger" onclick="changeBookingStatus(' + b.id + ', \'cancelled\')">Отменить бронь</button>';
       } else {
-        actions += '<span style="color: var(--text-secondary); font-size: 12px;">Архив</span>';
+        actions += '<span style="color: var(--text-muted); font-size: 12px;">Архив</span>';
       }
 
       html +=
         '<tr>' +
-          '<td>' + b.id + '</td>' +
+          '<td><span style="font-weight: 600; color: var(--text-secondary);">#' + b.id + '</span></td>' +
           '<td><strong>' + escapeHtml(b.apartment_name) + '</strong></td>' +
           '<td>' + escapeHtml(b.guest_name) + '<br><small style="color: var(--text-secondary);">' + escapeHtml(b.user_email) + '</small></td>' +
           '<td>' + escapeHtml(b.guest_phone) + '</td>' +
           '<td>' + dates + '</td>' +
-          '<td><strong>' + formatPrice(b.total_price) + ' руб</strong></td>' +
+          '<td><strong>' + formatPrice(b.total_price) + ' ₽</strong></td>' +
           '<td><span class="badge ' + statusClass + '">' + statusText + '</span></td>' +
           '<td>' + actions + '</td>' +
         '</tr>';
     });
     tbody.innerHTML = html;
   } catch (err) {
-    tbody.innerHTML = '<tr><td colspan="8" style="color: #dc3545; text-align: center;">Ошибка загрузки: ' + escapeHtml(err.message) + '</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="color: #dc2626; text-align: center;">Ошибка загрузки: ' + escapeHtml(err.message) + '</td></tr>';
   }
 }
 
@@ -233,7 +230,7 @@ async function changeBookingStatus(id, newStatus) {
     loadStats();
     loadAdminBookings();
   } catch (err) {
-    alert(err.message || 'Ошибка обновления статуса');
+    alert(err.message || 'Ошибка обновления статуса заявки');
   }
 }
 
@@ -255,16 +252,16 @@ async function loadAdminUsers() {
       var toggleBtn = '';
       if (u.id !== currentUser.id) {
         var newRole = u.role === 'admin' ? 'user' : 'admin';
-        var btnText = u.role === 'admin' ? 'Снять админа' : 'Сделать админом';
-        toggleBtn = '<button class="btn btn-sm btn-outline" onclick="changeUserRole(' + u.id + ', \'' + newRole + '\')">' + btnText + '</button>';
+        var btnText = u.role === 'admin' ? 'Снять права админа' : 'Назначить админом';
+        toggleBtn = '<button class="btn-action btn-action-outline" onclick="changeUserRole(' + u.id + ', \'' + newRole + '\')">' + btnText + '</button>';
       } else {
-        toggleBtn = '<small style="color: var(--text-secondary);">Вы</small>';
+        toggleBtn = '<small style="color: var(--text-muted); font-weight: 600;">Текущий профиль</small>';
       }
 
       html +=
         '<tr>' +
-          '<td>' + u.id + '</td>' +
-          '<td><strong>' + escapeHtml(u.name) + '</strong></td>' +
+          '<td><span style="font-weight: 600; color: var(--text-secondary);">#' + u.id + '</span></td>' +
+          '<td><strong style="color: var(--text);">' + escapeHtml(u.name) + '</strong></td>' +
           '<td>' + escapeHtml(u.email) + '</td>' +
           '<td>' + escapeHtml(u.phone || '—') + '</td>' +
           '<td>' + u.bookings_count + '</td>' +
@@ -274,15 +271,16 @@ async function loadAdminUsers() {
     });
     tbody.innerHTML = html;
   } catch (err) {
-    tbody.innerHTML = '<tr><td colspan="7" style="color: #dc3545; text-align: center;">Ошибка загрузки пользователей</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="color: #dc2626; text-align: center;">Ошибка загрузки пользователей</td></tr>';
   }
 }
 
 async function changeUserRole(id, role) {
-  if (!confirm('Вы уверены, что хотите изменить роль пользователя на ' + role + '?')) return;
+  var roleText = role === 'admin' ? 'Администратор' : 'Пользователь';
+  if (!confirm('Подтвердите изменение роли пользователя на: ' + roleText)) return;
 
   try {
-    await API.put('/admin/users/' + id + '/role', { role: role });
+    await API.put('/admin/users/' + id, { role: role });
     loadAdminUsers();
   } catch (err) {
     alert(err.message || 'Ошибка изменения роли');
@@ -297,42 +295,43 @@ async function loadAdminReviews() {
   try {
     var reviews = await API.get('/admin/reviews');
     if (reviews.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Отзывов пока нет</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 30px;">Отзывы пока не оставлены</td></tr>';
       return;
     }
 
     var html = '';
     reviews.forEach(function(r) {
-      var stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
       var dateStr = r.created_at ? new Date(r.created_at).toLocaleDateString('ru-RU') : '';
+      var ratingBadge = '<span style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; color: #b45309; background: rgba(245, 158, 11, 0.12); padding: 2px 8px; border-radius: 4px;">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="#f59e0b" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>' +
+        r.rating + ' / 5</span>';
 
       html +=
         '<tr>' +
-          '<td>' + r.id + '</td>' +
+          '<td><span style="font-weight: 600; color: var(--text-secondary);">#' + r.id + '</span></td>' +
           '<td><strong>' + escapeHtml(r.apartment_name) + '</strong></td>' +
           '<td>' + escapeHtml(r.user_name) + '<br><small style="color: var(--text-secondary);">' + escapeHtml(r.user_email) + '</small></td>' +
-          '<td><span style="color: #ffc107;">' + stars + '</span></td>' +
-          '<td style="max-width: 300px;">' + escapeHtml(r.comment) + '</td>' +
-          '<td>' + dateStr + '</td>' +
+          '<td>' + ratingBadge + '</td>' +
+          '<td style="max-width: 320px; line-height: 1.4;">' + escapeHtml(r.comment) + '</td>' +
+          '<td style="color: var(--text-secondary);">' + dateStr + '</td>' +
           '<td>' +
-            '<button class="btn btn-sm btn-outline" style="color: #dc3545; border-color: #dc3545;" onclick="deleteReview(' + r.id + ')">Удалить</button>' +
+            '<button class="btn-action btn-action-danger" onclick="deleteReview(' + r.id + ')">Удалить</button>' +
           '</td>' +
         '</tr>';
     });
     tbody.innerHTML = html;
   } catch (err) {
-    tbody.innerHTML = '<tr><td colspan="7" style="color: #dc3545; text-align: center;">Ошибка загрузки отзывов</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7" style="color: #dc2626; text-align: center;">Ошибка загрузки отзывов</td></tr>';
   }
 }
 
 async function deleteReview(id) {
-  if (!confirm('Удалить данный отзыв?')) return;
+  if (!confirm('Подтвердите удаление отзыва #' + id)) return;
 
   try {
     await API.delete('/admin/reviews/' + id);
-    alert('Отзыв удалён');
     loadAdminReviews();
   } catch (err) {
-    alert(err.message || 'Ошибка удаления отзыва');
+    alert(err.message || 'Ошибка при удалении отзыва');
   }
 }

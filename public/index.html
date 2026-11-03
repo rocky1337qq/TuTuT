@@ -59,15 +59,17 @@
                         </div>
                         <div>
                             <label>Заезд</label>
-                            <select id="checkinSelect">
-                                <option value="">Выберите дату</option>
-                            </select>
+                            <div class="date-input-wrapper">
+                                <input type="text" id="checkinInput" placeholder="Выберите дату" readonly autocomplete="off">
+                                <svg class="calendar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            </div>
                         </div>
                         <div>
                             <label>Выезд</label>
-                            <select id="checkoutSelect">
-                                <option value="">Выберите дату</option>
-                            </select>
+                            <div class="date-input-wrapper">
+                                <input type="text" id="checkoutInput" placeholder="Выберите дату" readonly autocomplete="off">
+                                <svg class="calendar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            </div>
                         </div>
                         <button type="submit" class="btn">Найти</button>
                     </form>
@@ -203,12 +205,27 @@
     <script src="js/menu.js"></script>
     <script src="js/dates.js"></script>
     <script src="js/auth.js"></script>
-    <script src="js/initDates.js"></script>
+    <script src="js/datepicker.js"></script>
     <script src="js/three.js"></script>
     <script>
         initTheme();
         checkAuth();
-        initDates();
+
+        var datePicker = new DatePicker({
+            checkinInputId: 'checkinInput',
+            checkoutInputId: 'checkoutInput'
+        });
+
+        document.getElementById('searchForm').onsubmit = function(e) {
+            e.preventDefault();
+            var city = document.getElementById('citySelect').value;
+            var checkin = document.getElementById('checkinInput').value;
+            var checkout = document.getElementById('checkoutInput').value;
+            var url = 'search.html?city=' + encodeURIComponent(city);
+            if (checkin) url += '&checkin=' + encodeURIComponent(checkin);
+            if (checkout) url += '&checkout=' + encodeURIComponent(checkout);
+            window.location.href = url;
+        };
     </script>
 </body>
 </html>

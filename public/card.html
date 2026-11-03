@@ -5,7 +5,162 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ТуТуТ — Аренда квартиры</title>
     <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="styles.css?v=3">
+    <link rel="stylesheet" href="styles.css?v=4">
+    <style>
+        .card-page {
+            padding: 30px 0 60px;
+        }
+        .card-top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .card-layout {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 32px;
+            align-items: start;
+        }
+        @media (max-width: 992px) {
+            .card-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        .card-sidebar {
+            position: sticky;
+            top: 90px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .booking-sidebar-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+        }
+        .booking-sidebar-card .price-row {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+        .booking-sidebar-card .price-val {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+        }
+        .booking-sidebar-card .price-period {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .booking-dates-box {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            background: var(--bg);
+        }
+        .booking-dates-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+        .booking-date-col {
+            padding: 10px 14px;
+            cursor: pointer;
+            border-right: 1px solid var(--border);
+            transition: background 0.15s;
+        }
+        .booking-date-col:last-child {
+            border-right: none;
+        }
+        .booking-date-col:hover {
+            background: var(--bg-secondary);
+        }
+        .booking-date-col label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+        .booking-date-col input {
+            width: 100%;
+            border: none;
+            background: none;
+            padding: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            outline: none;
+        }
+        .calc-breakdown {
+            margin: 16px 0;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            font-size: 14px;
+        }
+        .calc-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+        .calc-row.total {
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--text);
+            padding-top: 8px;
+            border-top: 1px dashed var(--border);
+            margin-top: 10px;
+            margin-bottom: 0;
+        }
+        .occupancy-alert {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: #b91c1c;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 14px;
+            display: none;
+        }
+        .occupancy-block {
+            margin-top: 30px;
+            padding: 20px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+        }
+        .booked-badge-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: #b91c1c;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 8px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        .stars-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            vertical-align: middle;
+        }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -35,7 +190,7 @@
 
     <main class="card-page">
         <div class="container">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <div class="card-top-nav">
                 <div class="breadcrumbs" id="breadcrumbs" style="margin-bottom: 0;">
                     <a href="index.html">Главная</a>
                     <span>/</span>
@@ -43,59 +198,136 @@
                     <span>/</span>
                     <span class="current" id="breadcrumbName">Загрузка...</span>
                 </div>
-                <a href="search.html" class="btn btn-outline" style="padding: 6px 14px; font-size: 14px;">← Назад к поиску</a>
+                <a href="search.html" class="btn btn-outline" style="padding: 6px 14px; font-size: 13.5px; border-radius: 8px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 4px;"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Назад в каталог
+                </a>
             </div>
 
-            <div class="card-main">
-                <div id="cardContent">
-                    <p style="padding: 40px; text-align: center; color: var(--text-secondary);">Загрузка данных квартиры...</p>
-                </div>
-                <div class="card-booking">
-                    <div class="price" id="sidebarPrice">— руб <span>/ сутки</span></div>
-                    <button class="btn" id="bookBtn" style="width: 100%;">Забронировать</button>
-                </div>
-                <div class="card-map">
-                    <h3>Расположение на карте</h3>
-                    <img id="mapImage" src="" alt="Карта" style="width: 100%; border-radius: 8px; min-height: 200px; background: var(--bg-secondary);">
-                </div>
-            </div>
-
-            <!-- Секция отзывов об этой квартире -->
-            <section class="card-reviews-section" style="margin-top: 50px; padding-top: 30px; border-top: 1px solid var(--border);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
-                    <h2>Отзывы гостей (<span id="reviewsCount">0</span>)</h2>
-                    <div id="aptRatingBadge" style="display: none; align-items: center; gap: 6px; font-weight: 700; font-size: 18px; color: #856404; background: #fff3cd; padding: 4px 12px; border-radius: 8px;">
-                        ★ <span id="aptRatingNum">0.0</span>
+            <div class="card-layout">
+                <!-- Основная левая колонка -->
+                <div class="card-content-wrap">
+                    <div id="cardContent">
+                        <p style="padding: 40px; text-align: center; color: var(--text-secondary);">Загрузка информации об объекте...</p>
                     </div>
+
+                    <!-- График занятости объекта -->
+                    <div class="occupancy-block" id="occupancyBlock">
+                        <h3 style="font-size: 17px; font-weight: 700; margin-bottom: 12px; color: var(--text);">
+                            График занятости объекта
+                        </h3>
+                        <p style="color: var(--text-secondary); font-size: 13.5px; margin-bottom: 14px;">
+                            Даты, на которые квартира уже забронирована другими гостями (в эти дни заселение невозможно):
+                        </p>
+                        <div id="bookedDatesList">
+                            <span style="color: var(--text-muted); font-size: 13px;">Загрузка графика...</span>
+                        </div>
+                    </div>
+
+                    <!-- Секция отзывов -->
+                    <section class="card-reviews-section" style="margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--border);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px;">
+                            <h2 style="font-size: 20px; font-weight: 700; color: var(--text);">Отзывы гостей (<span id="reviewsCount">0</span>)</h2>
+                            <div id="aptRatingBadge" style="display: none; align-items: center; gap: 6px; font-weight: 700; font-size: 15px; color: #b45309; background: rgba(245, 158, 11, 0.12); padding: 4px 12px; border-radius: 8px;">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="#f59e0b" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                <span id="aptRatingNum">0.0</span>
+                            </div>
+                        </div>
+
+                        <div id="reviewsList">
+                            <p style="color: var(--text-secondary);">Загрузка отзывов...</p>
+                        </div>
+
+                        <!-- Форма добавления отзыва -->
+                        <div style="margin-top: 28px; background: var(--bg-card); padding: 24px; border-radius: 14px; border: 1px solid var(--border); box-shadow: var(--shadow-sm);">
+                            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 14px; color: var(--text);">Оставить свой отзыв</h3>
+                            <div id="reviewAuthNotice" style="display: none; color: var(--text-secondary);"></div>
+                            <form id="addReviewForm" style="display: none;">
+                                <div class="form-group">
+                                    <label>Оценка</label>
+                                    <select id="reviewRating" style="max-width: 200px; padding: 10px; border-radius: 8px;" required>
+                                        <option value="5">5 из 5 — Отлично</option>
+                                        <option value="4">4 из 5 — Хорошо</option>
+                                        <option value="3">3 из 5 — Удовлетворительно</option>
+                                        <option value="2">2 из 5 — Плохо</option>
+                                        <option value="1">1 из 5 — Ужасно</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Комментарий</label>
+                                    <textarea id="reviewComment" rows="3" placeholder="Опишите ваши впечатления от проживания..." required maxlength="500"></textarea>
+                                </div>
+                                <button type="submit" class="btn" style="padding: 10px 24px;">Опубликовать отзыв</button>
+                            </form>
+                        </div>
+                    </section>
                 </div>
 
-                <div id="reviewsList">
-                    <p style="color: var(--text-secondary);">Загрузка отзывов...</p>
-                </div>
+                <!-- Правая колонка: форма бронирования и выбор дат -->
+                <aside class="card-sidebar">
+                    <div class="booking-sidebar-card">
+                        <div class="price-row">
+                            <span class="price-val" id="sidebarPrice">— ₽</span>
+                            <span class="price-period">/ сутки</span>
+                        </div>
 
-                <!-- Форма добавления отзыва -->
-                <div style="margin-top: 30px; background: var(--bg-card); padding: 24px; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow);">
-                    <h3 style="margin-bottom: 16px;">Оставить свой отзыв</h3>
-                    <div id="reviewAuthNotice" style="display: none; color: var(--text-secondary);"></div>
-                    <form id="addReviewForm" style="display: none;">
-                        <div class="form-group">
-                            <label>Ваша оценка</label>
-                            <select id="reviewRating" style="max-width: 200px;" required>
-                                <option value="5">★★★★★ (5 — Отлично)</option>
-                                <option value="4">★★★★☆ (4 — Хорошо)</option>
-                                <option value="3">★★★☆☆ (3 — Удовлетворительно)</option>
-                                <option value="2">★★☆☆☆ (2 — Плохо)</option>
-                                <option value="1">★☆☆☆☆ (1 — Ужасно)</option>
-                            </select>
+                        <!-- Статус доступности -->
+                        <div id="sidebarAvailabilityStatus" class="badge-status available" style="margin-bottom: 14px;">
+                            <span class="status-dot"></span>
+                            <span id="sidebarStatusText">Выберите даты для расчета</span>
                         </div>
-                        <div class="form-group">
-                            <label>Ваш отзыв</label>
-                            <textarea id="reviewComment" rows="3" placeholder="Поделитесь своими впечатлениями о проживании..." required maxlength="500"></textarea>
+
+                        <!-- Интерактивный выбор дат -->
+                        <div class="booking-dates-box">
+                            <div class="booking-dates-grid">
+                                <div class="booking-date-col" id="colCheckin">
+                                    <label>Заезд</label>
+                                    <input type="text" id="checkinInput" placeholder="Выбрать" readonly autocomplete="off">
+                                </div>
+                                <div class="booking-date-col" id="colCheckout">
+                                    <label>Выезд</label>
+                                    <input type="text" id="checkoutInput" placeholder="Выбрать" readonly autocomplete="off">
+                                </div>
+                            </div>
                         </div>
-                        <button type="submit" class="btn">Оставить отзыв</button>
-                    </form>
-                </div>
-            </section>
+
+                        <!-- Предупреждение если выбранные даты заняты -->
+                        <div class="occupancy-alert" id="occupancyAlert">
+                            Квартира уже забронирована на выбранный период. Пожалуйста, укажите свободные даты.
+                        </div>
+
+                        <!-- Расчет стоимости -->
+                        <div class="calc-breakdown" id="calcBreakdown" style="display: none;">
+                            <div class="calc-row">
+                                <span id="calcNightsLabel">0 суток</span>
+                                <span id="calcNightsPrice">0 ₽</span>
+                            </div>
+                            <div class="calc-row">
+                                <span>Сервисный сбор</span>
+                                <span>0 ₽</span>
+                            </div>
+                            <div class="calc-row total">
+                                <span>Итого к оплате</span>
+                                <span id="calcTotalPrice" style="color: var(--accent);">0 ₽</span>
+                            </div>
+                        </div>
+
+                        <button class="btn" id="bookBtn" style="width: 100%; padding: 14px; font-size: 15px; font-weight: 700; border-radius: 10px;">
+                            Забронировать
+                        </button>
+
+                        <div style="text-align: center; margin-top: 10px; font-size: 12px; color: var(--text-muted);">
+                            Безопасное онлайн-бронирование
+                        </div>
+                    </div>
+
+                    <!-- Карта расположения -->
+                    <div class="booking-sidebar-card">
+                        <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--text);">Расположение на карте</h3>
+                        <img id="mapImage" src="" alt="Карта Оренбурга" style="width: 100%; border-radius: 10px; min-height: 180px; object-fit: cover; background: var(--bg-secondary);">
+                    </div>
+                </aside>
+            </div>
         </div>
     </main>
 
@@ -106,7 +338,7 @@
         </div>
     </footer>
 
-    <!-- Модальное окно просмотра полноразмерных фото -->
+    <!-- Модальное окно полноразмерных фото -->
     <div class="photo-modal" id="photoModal">
         <button class="photo-modal-close" id="photoModalClose">×</button>
         <button class="photo-modal-nav photo-modal-prev" id="photoModalPrev">&lt;</button>
@@ -115,11 +347,37 @@
         <div class="photo-modal-counter" id="photoModalCounter"></div>
     </div>
 
-    <!-- Модальное окно входа -->
+    <!-- Модальное окно бронирования -->
+    <div class="modal" id="bookingModal">
+        <div class="modal-content" style="max-width: 520px; border-radius: 16px;">
+            <button class="modal-close" onclick="closeModal('bookingModal')">×</button>
+            <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 16px;">Оформление бронирования</h2>
+            <div class="booking-info" id="bookingInfo"></div>
+            <form id="bookingForm">
+                <div class="form-group">
+                    <label>ФИО гостя</label>
+                    <input type="text" id="bookName" placeholder="Иван Петров" required maxlength="50">
+                </div>
+                <div class="form-group">
+                    <label>Номер телефона</label>
+                    <input type="tel" id="bookPhone" placeholder="+7 (999) 123-45-67" required maxlength="20">
+                </div>
+                <div class="form-group">
+                    <label>Комментарий к бронированию</label>
+                    <textarea id="bookMessage" placeholder="Укажите ориентировочное время прибытия..." maxlength="500" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn" id="submitBtn" style="width: 100%; padding: 13px; font-size: 15px; font-weight: 700;">
+                    Подтвердить бронирование
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальные окна аутентификации -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('loginModal')">×</button>
-            <h2>Вход в аккаунт</h2>
+            <h2>Вход в учетную запись</h2>
             <form id="loginForm">
                 <div class="form-group">
                     <label>Email</label>
@@ -140,7 +398,6 @@
         </div>
     </div>
 
-    <!-- Модальное окно регистрации -->
     <div class="modal" id="registerModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('registerModal')">×</button>
@@ -169,35 +426,12 @@
         </div>
     </div>
 
-    <!-- Модальное окно бронирования -->
-    <div class="modal" id="bookingModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('bookingModal')">×</button>
-            <h2>Заявка на бронирование</h2>
-            <div class="booking-info" id="bookingInfo"></div>
-            <form id="bookingForm">
-                <div class="form-group">
-                    <label>Ваше имя</label>
-                    <input type="text" id="bookName" placeholder="Иван Петров" required maxlength="50">
-                </div>
-                <div class="form-group">
-                    <label>Телефон</label>
-                    <input type="tel" id="bookPhone" placeholder="+7 (999) 123-45-67" required maxlength="20">
-                </div>
-                <div class="form-group">
-                    <label>Комментарий / Пожелания</label>
-                    <textarea id="bookMessage" placeholder="Время прибытия, количество гостей..." maxlength="500"></textarea>
-                </div>
-                <button type="submit" class="btn" id="submitBtn">Отправить заявку</button>
-            </form>
-        </div>
-    </div>
-
     <script src="js/api.js"></script>
     <script src="js/theme.js"></script>
     <script src="js/menu.js"></script>
     <script src="js/dates.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/datepicker.js"></script>
     <script src="js/gallery.js"></script>
     <script src="js/map.js"></script>
     <script src="js/booking.js"></script>
@@ -206,14 +440,15 @@
         initTheme();
         checkAuth();
 
-        var checkin = getUrlParameter('checkin');
-        var checkout = getUrlParameter('checkout');
+        var checkinParam = getUrlParameter('checkin');
+        var checkoutParam = getUrlParameter('checkout');
         var aptId = parseInt(getUrlParameter('id'), 10);
         var apt = null;
+        var datePickerInstance = null;
 
         async function initCard() {
             if (!aptId) {
-                document.querySelector('.card-page').innerHTML = '<div class="container"><h1>Квартира не указана</h1><a href="search.html" class="btn">Вернуться в каталог</a></div>';
+                document.querySelector('.card-page').innerHTML = '<div class="container"><h1>Объект не указан</h1><a href="search.html" class="btn">Вернуться в каталог</a></div>';
                 return;
             }
 
@@ -222,14 +457,14 @@
                 window.apt = apt;
                 window.currentApartment = apt;
 
-                document.getElementById('sidebarPrice').innerHTML = formatPrice(apt.price) + ' руб <span>/ сутки</span>';
+                document.getElementById('sidebarPrice').textContent = formatPrice(apt.price) + ' ₽';
                 document.getElementById('breadcrumbName').textContent = apt.name;
 
                 if (Number(apt.avg_rating) > 0) {
                     var badge = document.getElementById('aptRatingBadge');
                     var num = document.getElementById('aptRatingNum');
                     if (badge && num) {
-                        num.textContent = apt.avg_rating;
+                        num.textContent = apt.avg_rating + ' (' + apt.reviews_count + ')';
                         badge.style.display = 'inline-flex';
                     }
                 }
@@ -264,23 +499,116 @@
                         '<div class="thumbs">' + thumbsHtml + '</div>' +
                     '</div>' +
                     '<div class="card-details">' +
-                        '<h1 id="aptTitle">' + escapeHtml(apt.name) + '</h1>' +
-                        '<p class="address" id="aptAddress">' + escapeHtml(apt.city) + ', ' + escapeHtml(apt.address) + '</p>' +
-                        '<div class="price" id="aptPrice">' + formatPrice(apt.price) + ' руб <span>/ сутки</span></div>' +
+                        '<h1 id="aptTitle" style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">' + escapeHtml(apt.name) + '</h1>' +
+                        '<p class="address" id="aptAddress" style="color: var(--text-secondary); margin-bottom: 16px;">' + escapeHtml(apt.city) + ', ' + escapeHtml(apt.address) + '</p>' +
                         charsHtml +
-                        (amenitiesHtml ? '<h2>Удобства</h2><div class="amenities">' + amenitiesHtml + '</div>' : '') +
-                        '<h2>Описание</h2>' +
-                        '<p class="description" id="aptDesc">' + escapeHtml(apt.description) + '</p>' +
+                        (amenitiesHtml ? '<h2 style="font-size: 18px; font-weight: 700; margin-top: 24px;">Удобства</h2><div class="amenities">' + amenitiesHtml + '</div>' : '') +
+                        '<h2 style="font-size: 18px; font-weight: 700; margin-top: 24px;">Описание объекта</h2>' +
+                        '<p class="description" id="aptDesc" style="line-height: 1.6; color: var(--text);">' + escapeHtml(apt.description) + '</p>' +
                     '</div>';
 
                 document.getElementById('prevBtn').onclick = prevPhoto;
                 document.getElementById('nextBtn').onclick = nextPhoto;
 
+                // Отрисовка графика занятости объекта
+                renderBookedDatesList(apt.bookedDates);
+
+                // Инициализация календаря выбора дат с учетом занятых дней этой квартиры
+                datePickerInstance = new DatePicker({
+                    checkinInputId: 'checkinInput',
+                    checkoutInputId: 'checkoutInput',
+                    initialCheckin: checkinParam,
+                    initialCheckout: checkoutParam,
+                    bookedDates: apt.bookedDates || [],
+                    onSelect: function(inDate, outDate) {
+                        checkDatesAvailability(inDate, outDate);
+                    }
+                });
+
+                // Если даты уже были в URL
+                if (checkinParam && checkoutParam) {
+                    checkDatesAvailability(checkinParam, checkoutParam);
+                }
+
                 initMap();
                 loadReviews(aptId);
                 initReviewForm(aptId);
             } catch (err) {
-                document.querySelector('.card-page').innerHTML = '<div class="container"><h1>Ошибка загрузки квартиры: ' + escapeHtml(err.message) + '</h1><a href="search.html" class="btn">Вернуться в каталог</a></div>';
+                document.querySelector('.card-page').innerHTML = '<div class="container"><h1>Ошибка загрузки: ' + escapeHtml(err.message) + '</h1><a href="search.html" class="btn">Вернуться в каталог</a></div>';
+            }
+        }
+
+        function renderBookedDatesList(bookedDates) {
+            var container = document.getElementById('bookedDatesList');
+            if (!container) return;
+
+            if (!bookedDates || bookedDates.length === 0) {
+                container.innerHTML = '<span style="color: #0A7C3E; font-weight: 600; font-size: 13.5px;">Объект свободен на весь ближайший месяц. Можно выбирать любые даты.</span>';
+                return;
+            }
+
+            var html = '';
+            bookedDates.forEach(function(b) {
+                html += '<span class="booked-badge-item">' +
+                    '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>' +
+                    formatDate(b.checkin, true) + ' — ' + formatDate(b.checkout, true) +
+                    '</span>';
+            });
+
+            container.innerHTML = html;
+        }
+
+        function checkDatesAvailability(checkinStr, checkoutStr) {
+            var alertBox = document.getElementById('occupancyAlert');
+            var statusBadge = document.getElementById('sidebarAvailabilityStatus');
+            var statusText = document.getElementById('sidebarStatusText');
+            var calcBox = document.getElementById('calcBreakdown');
+            var bookBtn = document.getElementById('bookBtn');
+
+            if (!checkinStr || !checkoutStr) {
+                statusBadge.className = 'badge-status available';
+                statusText.textContent = 'Выберите даты для расчета';
+                alertBox.style.display = 'none';
+                calcBox.style.display = 'none';
+                bookBtn.disabled = false;
+                bookBtn.textContent = 'Забронировать';
+                return;
+            }
+
+            // Проверяем пересечение с занятыми датами
+            var isConflict = false;
+            if (apt && apt.bookedDates) {
+                for (var i = 0; i < apt.bookedDates.length; i++) {
+                    var b = apt.bookedDates[i];
+                    if (checkinStr < b.checkout && checkoutStr > b.checkin) {
+                        isConflict = true;
+                        break;
+                    }
+                }
+            }
+
+            if (isConflict) {
+                statusBadge.className = 'badge-status busy';
+                statusText.textContent = 'Объект занят на эти даты';
+                alertBox.style.display = 'block';
+                calcBox.style.display = 'none';
+                bookBtn.disabled = true;
+                bookBtn.textContent = 'Даты недоступны';
+            } else {
+                statusBadge.className = 'badge-status available';
+                statusText.textContent = 'Свободно на выбранные даты';
+                alertBox.style.display = 'none';
+
+                var nights = calculateNights(checkinStr, checkoutStr);
+                var total = nights * apt.price;
+
+                document.getElementById('calcNightsLabel').textContent = nights + ' ' + (nights === 1 ? 'сутки' : (nights < 5 ? 'суток' : 'суток')) + ' × ' + formatPrice(apt.price) + ' ₽';
+                document.getElementById('calcNightsPrice').textContent = formatPrice(total) + ' ₽';
+                document.getElementById('calcTotalPrice').textContent = formatPrice(total) + ' ₽';
+                calcBox.style.display = 'block';
+
+                bookBtn.disabled = false;
+                bookBtn.textContent = 'Забронировать (' + formatPrice(total) + ' ₽)';
             }
         }
 

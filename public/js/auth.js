@@ -13,7 +13,7 @@ function checkAuth() {
     var shortName = user.name ? user.name.split(' ')[0] : user.email.split('@')[0];
 
     var adminLink = user.role === 'admin'
-      ? '<a href="admin.html" class="admin-link" style="color: #2e7d32; font-weight: 600;">👑 Админ-панель</a>'
+      ? '<a href="admin.html" class="admin-link" style="color: var(--accent); font-weight: 600; display: flex; align-items: center; gap: 6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l7 4v6c0 5.25-3.5 10-7 12-3.5-2-7-6.75-7-12V6l7-4z"/></svg>Панель управления</a>'
       : '';
 
     authDiv.innerHTML =

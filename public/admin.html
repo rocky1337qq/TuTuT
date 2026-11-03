@@ -3,59 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Админ-панель — ТуТуТ</title>
+    <title>Панель управления — ТуТуТ</title>
     <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="styles.css?v=3">
+    <link rel="stylesheet" href="styles.css?v=4">
     <style>
         .admin-page {
-            padding: 40px 0;
+            padding: 36px 0 60px;
             min-height: calc(100vh - 160px);
+            background: var(--bg);
         }
         .admin-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
             flex-wrap: wrap;
             gap: 16px;
         }
+        .admin-title-wrap h1 {
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.3px;
+        }
+        .admin-title-wrap p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 4px;
+        }
         .admin-stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 16px;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
         .stat-card {
             background: var(--bg-card);
-            padding: 20px;
-            border-radius: 12px;
+            padding: 20px 24px;
+            border-radius: 14px;
             border: 1px solid var(--border);
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .stat-card .stat-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .stat-card .num {
-            font-size: 28px;
+            font-size: 30px;
             font-weight: 700;
+            color: var(--text);
+            margin-top: 8px;
+            letter-spacing: -0.5px;
+        }
+        .stat-card.stat-accent .num {
             color: var(--accent);
-            margin-top: 6px;
         }
         .admin-nav-tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 24px;
-            border-bottom: 2px solid var(--border);
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
             overflow-x: auto;
+            padding-bottom: 2px;
         }
         .admin-nav-tab {
-            padding: 12px 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 18px;
             background: none;
             border: none;
-            border-bottom: 3px solid transparent;
-            font-size: 15px;
+            border-bottom: 2px solid transparent;
+            font-size: 14px;
             font-weight: 600;
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             white-space: nowrap;
+        }
+        .admin-nav-tab svg {
+            width: 17px;
+            height: 17px;
+            stroke-width: 2;
+            stroke: currentColor;
+            fill: none;
+        }
+        .admin-nav-tab:hover {
+            color: var(--text);
         }
         .admin-nav-tab.active {
             color: var(--accent);
@@ -65,8 +105,9 @@
             display: none;
             background: var(--bg-card);
             padding: 24px;
-            border-radius: 12px;
+            border-radius: 14px;
             border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
         }
         .admin-tab-content.active {
             display: block;
@@ -74,36 +115,88 @@
         .admin-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 14px;
+            font-size: 13.5px;
         }
         .admin-table th, .admin-table td {
-            padding: 12px 14px;
+            padding: 14px 16px;
             text-align: left;
             border-bottom: 1px solid var(--border);
+            vertical-align: middle;
         }
         .admin-table th {
             background: var(--bg-secondary);
+            color: var(--text-secondary);
             font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .admin-table tr:hover {
             background: var(--bg-secondary);
         }
         .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 10px;
+            border-radius: 6px;
             font-size: 12px;
             font-weight: 600;
         }
-        .badge-pending { background: #fff3cd; color: #856404; }
-        .badge-confirmed { background: #d4edda; color: #155724; }
-        .badge-cancelled { background: #f8d7da; color: #721c24; }
-        .badge-admin { background: #d1ecf1; color: #0c5460; }
-        .badge-user { background: #e2e3e5; color: #383d41; }
-        .btn-sm {
-            padding: 6px 10px;
-            font-size: 12px;
-            margin-right: 4px;
+        .badge-pending {
+            background: rgba(245, 158, 11, 0.12);
+            color: #b45309;
+        }
+        .badge-confirmed {
+            background: rgba(16, 185, 129, 0.14);
+            color: #047857;
+        }
+        .badge-cancelled {
+            background: rgba(239, 68, 68, 0.12);
+            color: #b91c1c;
+        }
+        .badge-admin {
+            background: rgba(10, 124, 62, 0.12);
+            color: var(--accent);
+        }
+        .badge-user {
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            font-size: 12.5px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: all 0.15s ease;
+        }
+        .btn-action-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+        .btn-action-primary:hover {
+            background: var(--accent-hover);
+        }
+        .btn-action-outline {
+            background: none;
+            border-color: var(--border);
+            color: var(--text);
+        }
+        .btn-action-outline:hover {
+            background: var(--bg-secondary);
+        }
+        .btn-action-danger {
+            background: none;
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #dc2626;
+        }
+        .btn-action-danger:hover {
+            background: rgba(239, 68, 68, 0.08);
         }
         .table-responsive {
             overflow-x: auto;
@@ -140,46 +233,60 @@
     <main class="admin-page">
         <div class="container">
             <div class="admin-header">
-                <div>
-                    <h1>Панель администратора</h1>
-                    <p style="color: var(--text-secondary); margin-top: 4px;">Управление квартирами, бронированиями, пользователями и отзывами</p>
+                <div class="admin-title-wrap">
+                    <h1>Панель управления</h1>
+                    <p>Администрирование каталога, заявок на бронирование и учетных записей</p>
                 </div>
-                <a href="index.html" class="btn btn-outline">← На сайт</a>
+                <div style="display: flex; gap: 10px;">
+                    <a href="index.html" class="btn btn-outline" style="font-size: 14px; padding: 8px 16px;">Перейти на сайт</a>
+                </div>
             </div>
 
             <!-- Статистика дашборда -->
             <div class="admin-stats-grid" id="statsGrid">
                 <div class="stat-card">
-                    <div>Всего квартир</div>
+                    <div class="stat-label">Всего квартир</div>
                     <div class="num" id="statApartments">—</div>
                 </div>
                 <div class="stat-card">
-                    <div>Пользователей</div>
+                    <div class="stat-label">Пользователей</div>
                     <div class="num" id="statUsers">—</div>
                 </div>
                 <div class="stat-card">
-                    <div>Всего бронирований</div>
+                    <div class="stat-label">Бронирований</div>
                     <div class="num" id="statBookings">—</div>
                 </div>
-                <div class="stat-card">
-                    <div>Общая выручка</div>
-                    <div class="num" id="statRevenue">— руб</div>
+                <div class="stat-card stat-accent">
+                    <div class="stat-label">Суммарная выручка</div>
+                    <div class="num" id="statRevenue">— ₽</div>
                 </div>
             </div>
 
             <!-- Вкладки управления -->
             <div class="admin-nav-tabs">
-                <button class="admin-nav-tab active" onclick="switchAdminTab('apartments')">🏠 Квартиры</button>
-                <button class="admin-nav-tab" onclick="switchAdminTab('bookings')">📅 Бронирования</button>
-                <button class="admin-nav-tab" onclick="switchAdminTab('users')">👥 Пользователи</button>
-                <button class="admin-nav-tab" onclick="switchAdminTab('reviews')">⭐ Отзывы</button>
+                <button class="admin-nav-tab active" onclick="switchAdminTab('apartments')">
+                    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    Квартиры
+                </button>
+                <button class="admin-nav-tab" onclick="switchAdminTab('bookings')">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    Бронирования
+                </button>
+                <button class="admin-nav-tab" onclick="switchAdminTab('users')">
+                    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Пользователи
+                </button>
+                <button class="admin-nav-tab" onclick="switchAdminTab('reviews')">
+                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    Отзывы
+                </button>
             </div>
 
             <!-- 1. Квартиры -->
             <div id="tab-apartments" class="admin-tab-content active">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <h2>Каталог квартир</h2>
-                    <button class="btn" onclick="openApartmentModal()">+ Добавить квартиру</button>
+                    <h2 style="font-size: 18px; font-weight: 700;">Список объектов</h2>
+                    <button class="btn" onclick="openApartmentModal()" style="font-size: 13.5px; padding: 8px 18px;">+ Добавить объект</button>
                 </div>
                 <div class="table-responsive">
                     <table class="admin-table">
@@ -195,7 +302,7 @@
                             </tr>
                         </thead>
                         <tbody id="adminApartmentsList">
-                            <tr><td colspan="7" style="text-align: center;">Загрузка...</td></tr>
+                            <tr><td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 30px;">Загрузка данных...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -203,23 +310,25 @@
 
             <!-- 2. Бронирования -->
             <div id="tab-bookings" class="admin-tab-content">
-                <h2 style="margin-bottom: 20px;">Все бронирования</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="font-size: 18px; font-weight: 700;">Журнал бронирований</h2>
+                </div>
                 <div class="table-responsive">
                     <table class="admin-table">
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Квартира</th>
-                                <th>Гость</th>
-                                <th>Телефон</th>
-                                <th>Даты</th>
+                                <th>Объект</th>
+                                <th>Клиент</th>
+                                <th>Контакты</th>
+                                <th>Период проживания</th>
                                 <th>Сумма</th>
                                 <th>Статус</th>
                                 <th>Действия</th>
                             </tr>
                         </thead>
                         <tbody id="adminBookingsList">
-                            <tr><td colspan="8" style="text-align: center;">Загрузка...</td></tr>
+                            <tr><td colspan="8" style="text-align: center; color: var(--text-secondary); padding: 30px;">Загрузка данных...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -227,7 +336,9 @@
 
             <!-- 3. Пользователи -->
             <div id="tab-users" class="admin-tab-content">
-                <h2 style="margin-bottom: 20px;">Пользователи системы</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="font-size: 18px; font-weight: 700;">Учетные записи</h2>
+                </div>
                 <div class="table-responsive">
                     <table class="admin-table">
                         <thead>
@@ -242,7 +353,7 @@
                             </tr>
                         </thead>
                         <tbody id="adminUsersList">
-                            <tr><td colspan="7" style="text-align: center;">Загрузка...</td></tr>
+                            <tr><td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 30px;">Загрузка данных...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -250,22 +361,24 @@
 
             <!-- 4. Отзывы -->
             <div id="tab-reviews" class="admin-tab-content">
-                <h2 style="margin-bottom: 20px;">Модерация отзывов</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="font-size: 18px; font-weight: 700;">Модерация отзывов</h2>
+                </div>
                 <div class="table-responsive">
                     <table class="admin-table">
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Квартира</th>
-                                <th>Пользователь</th>
+                                <th>Объект</th>
+                                <th>Автор</th>
                                 <th>Оценка</th>
-                                <th>Отзыв</th>
+                                <th>Текст отзыва</th>
                                 <th>Дата</th>
                                 <th>Действия</th>
                             </tr>
                         </thead>
                         <tbody id="adminReviewsList">
-                            <tr><td colspan="7" style="text-align: center;">Загрузка...</td></tr>
+                            <tr><td colspan="7" style="text-align: center; color: var(--text-secondary); padding: 30px;">Загрузка данных...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -275,14 +388,14 @@
 
     <!-- Модальное окно добавления/редактирования квартиры -->
     <div class="modal" id="aptModal">
-        <div class="modal-content" style="max-width: 650px;">
+        <div class="modal-content" style="max-width: 650px; border-radius: 16px;">
             <button class="modal-close" onclick="closeModal('aptModal')">×</button>
-            <h2 id="aptModalTitle">Добавить квартиру</h2>
+            <h2 id="aptModalTitle" style="font-size: 20px; font-weight: 700; margin-bottom: 20px;">Добавить объект</h2>
             <form id="apartmentForm">
                 <input type="hidden" id="formAptId">
                 <div class="form-group">
-                    <label>Название</label>
-                    <input type="text" id="aptFormName" required placeholder="Например: Уютная студия в центре">
+                    <label>Название объекта</label>
+                    <input type="text" id="aptFormName" required placeholder="Например: Апартаменты у Города еды">
                 </div>
                 <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                     <div>
@@ -296,7 +409,7 @@
                 </div>
                 <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px;">
                     <div>
-                        <label>Цена (руб/сут)</label>
+                        <label>Цена (₽/сут)</label>
                         <input type="number" id="aptFormPrice" required min="100">
                     </div>
                     <div>
@@ -317,23 +430,23 @@
                     <textarea id="aptFormDesc" rows="3" placeholder="Подробное описание квартиры"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Ссылки на фото (через запятую или с новой строки)</label>
-                    <textarea id="aptFormPhotos" rows="3" placeholder="images/id1_photo1.jpg, images/id1_photo2.jpg"></textarea>
+                    <label>Ссылки на фотографии (через запятую)</label>
+                    <textarea id="aptFormPhotos" rows="2" placeholder="images/id1_photo1.jpg, images/id1_photo2.jpg"></textarea>
                 </div>
                 <div class="form-group">
                     <label>Удобства (через запятую)</label>
                     <input type="text" id="aptFormAmenities" placeholder="Wi-Fi, Кондиционер, Стиральная машина, Кухня">
                 </div>
-                <button type="submit" class="btn" style="width: 100%;">Сохранить</button>
+                <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Сохранить объект</button>
             </form>
         </div>
     </div>
 
-    <!-- Модальные окна аутентификации (вход/регистрация) -->
+    <!-- Модальное окно входа -->
     <div class="modal" id="loginModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('loginModal')">×</button>
-            <h2>Вход в аккаунт</h2>
+            <h2>Вход в панель управления</h2>
             <form id="loginForm">
                 <div class="form-group">
                     <label>Email</label>

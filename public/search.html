@@ -41,16 +41,34 @@
                 <span class="current">Квартиры</span>
             </div>
 
-            <h1 class="section-title">Квартиры в Оренбурге</h1>
-
-            <div class="date-filter">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; flex-wrap: wrap; gap: 14px;">
                 <div>
-                    <label>Заезд:</label>
-                    <input type="date" id="checkinInput" min="2026-01-01" max="2026-12-31">
+                    <h1 class="section-title" style="margin-bottom: 4px;">Квартиры в Оренбурге</h1>
+                    <p style="color: var(--text-secondary); font-size: 14px;" id="resultsCount">Загрузка вариантов...</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 16px; flex-wrap: wrap;">
+                    <label id="onlyAvailableWrapper" style="display: none; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; cursor: pointer; user-select: none;">
+                        <input type="checkbox" id="onlyAvailableCheckbox" checked style="accent-color: var(--accent); width: 16px; height: 16px;">
+                        Только свободные
+                    </label>
+                    <button class="btn btn-outline" id="resetDatesBtn" style="padding: 6px 12px; font-size: 13px; display: none;">Сбросить даты</button>
+                </div>
+            </div>
+
+            <div class="date-filter" style="background: var(--bg-card); padding: 16px 20px; border-radius: 14px; border: 1px solid var(--border); box-shadow: var(--shadow-sm); margin-bottom: 24px;">
+                <div>
+                    <label style="font-weight: 600; font-size: 13px;">Заезд:</label>
+                    <div class="date-input-wrapper">
+                        <input type="text" id="checkinInput" placeholder="Выберите дату" readonly autocomplete="off">
+                        <svg class="calendar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
                 </div>
                 <div>
-                    <label>Выезд:</label>
-                    <input type="date" id="checkoutInput" min="2026-01-01" max="2026-12-31">
+                    <label style="font-weight: 600; font-size: 13px;">Выезд:</label>
+                    <div class="date-input-wrapper">
+                        <input type="text" id="checkoutInput" placeholder="Выберите дату" readonly autocomplete="off">
+                        <svg class="calendar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    </div>
                 </div>
             </div>
 
@@ -126,22 +144,47 @@
     <script src="js/menu.js"></script>
     <script src="js/dates.js"></script>
     <script src="js/auth.js"></script>
+    <script src="js/datepicker.js"></script>
     <script src="js/listings.js"></script>
     <script>
         var checkinParam = getUrlParameter('checkin');
         var checkoutParam = getUrlParameter('checkout');
         var checkinInput = document.getElementById('checkinInput');
         var checkoutInput = document.getElementById('checkoutInput');
-        
+
         if (checkinParam) checkinInput.value = checkinParam;
         if (checkoutParam) checkoutInput.value = checkoutParam;
-        
+
         initTheme();
         checkAuth();
+
+        var datePicker = new DatePicker({
+            checkinInputId: 'checkinInput',
+            checkoutInputId: 'checkoutInput',
+            initialCheckin: checkinParam,
+            initialCheckout: checkoutParam,
+            onSelect: function(inDate, outDate) {
+                showApartments();
+            }
+        });
+
+        var resetBtn = document.getElementById('resetDatesBtn');
+        if (resetBtn) {
+            resetBtn.onclick = function() {
+                checkinInput.value = '';
+                checkoutInput.value = '';
+                datePicker.checkinDate = null;
+                datePicker.checkoutDate = null;
+                showApartments();
+            };
+        }
+
+        var onlyAvailCheckbox = document.getElementById('onlyAvailableCheckbox');
+        if (onlyAvailCheckbox) {
+            onlyAvailCheckbox.onchange = showApartments;
+        }
+
         showApartments();
-        
-        checkinInput.onchange = showApartments;
-        checkoutInput.onchange = showApartments;
     </script>
 </body>
 </html>

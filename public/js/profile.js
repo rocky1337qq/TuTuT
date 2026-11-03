@@ -36,7 +36,7 @@ async function loadProfile() {
 
   var roleBadge = document.getElementById('profileRoleBadge');
   if (roleBadge) {
-    roleBadge.textContent = user.role === 'admin' ? '👑 Администратор' : 'Гость';
+    roleBadge.textContent = user.role === 'admin' ? 'Администратор' : 'Гость';
     roleBadge.style.display = 'inline-block';
   }
 }
@@ -89,7 +89,7 @@ async function showBookings() {
           '</div>' +
           '<div class="right" style="text-align: right; min-width: 150px;">' +
             '<span class="status ' + statusClass + '" style="display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-bottom: 6px;">' + statusText + '</span>' +
-            '<div class="price" style="font-weight: 700; font-size: 16px; margin-bottom: 8px;">' + formatPrice(b.total_price) + ' руб</div>' +
+            '<div class="price" style="font-weight: 700; font-size: 16px; margin-bottom: 8px;">' + formatPrice(b.total_price) + ' ₽</div>' +
             cancelButton +
           '</div>' +
         '</div>';
